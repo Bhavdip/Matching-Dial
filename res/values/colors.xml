@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_global_dial_start">#0D0D0D</color>
+    <color name="color_global_low">#0072CF</color>
+    <color name="color_global_mild">#02CE24</color>
+    <color name="color_global_moderate">#FFDE00</color>
+    <color name="color_global_high">#F89200</color>
+    <color name="color_global_severe">#F73D04</color>
+    <color name="color_global_purpal">#320F30</color>
+</resources>
