@@ -10,22 +10,36 @@ import android.view.View;
 
 public class AdvDialView extends View {
 
-	int resource[] = { R.color.color_global_dial_start,
+	int resource[] = { R.color.color_global_dial_gray,
 			R.color.color_global_low, R.color.color_global_mild,
 			R.color.color_global_moderate, R.color.color_global_high,
 			R.color.color_global_severe };
 
 	Paint[] mPaints = new Paint[10];
-	final RectF rect = new RectF();
-	final RectF innerRect = new RectF();
 	
-	int mRadius = 160;
+	int mRadius = 200;
 	Context mContext;
 
 	public static final int SIZE = 250;
 
 	int deviceWidth = 0;
 	int deviceHeight = 0;
+	
+	public static final float SCALE_POSITION = 0.17f;
+	public static final float SCALE_START_ANGLE = 30.0f;
+	public static final int SCALE_DIVISIONS = 5;
+	public static final int SCALE_SUBDIVISIONS = 5;
+	
+	private float mScalePosition;
+	private int mSubdivisions;
+	private int mDivisions;
+	private float mScaleStartAngle;
+	private float mScaleRotation;
+	private float mSubdivisionAngle;
+	
+	private final RectF rect = new RectF();
+	private final RectF innerRect = new RectF();
+	private RectF mLineScaleRect;
 	
 	public AdvDialView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
@@ -48,9 +62,26 @@ public class AdvDialView extends View {
 	public int getStrokeWidth(){
 		return (int)(mRadius/1.40);
 	}
-
+	
+	private void initScale() {
+		mScaleRotation = (SCALE_START_ANGLE + 180) % 360;
+		//mDivisionValue = (mScaleEndValue - mScaleStartValue) / mDivisions;
+	    //mSubdivisionValue = mDivisionValue / mSubdivisions;
+		mSubdivisionAngle = (360 - 2 * mScaleStartAngle) / (mDivisions * mSubdivisions);
+	}
+	
+	
+	private void readAttrs() {
+		mScalePosition = SCALE_POSITION;
+		mSubdivisions = SCALE_SUBDIVISIONS;
+		mDivisions = SCALE_DIVISIONS;
+		mScaleStartAngle = SCALE_START_ANGLE;
+	}
+	
 	private void setUp() {
-
+		readAttrs();
+		initScale();
+		
 		mPaints[0] = new Paint();
 		mPaints[0].setColor(Color.parseColor("#0D0D0D"));
 		mPaints[0].setFlags(Paint.ANTI_ALIAS_FLAG);
@@ -100,66 +131,36 @@ public class AdvDialView extends View {
 		mPaints[5].setStyle(Paint.Style.STROKE);
 
 		mPaints[6] = new Paint();
-		mPaints[6].setColor(Color.parseColor("#0D0D0D"));
+		mPaints[6].setColor(Color.parseColor("#320F30"));
 		mPaints[6].setFlags(Paint.ANTI_ALIAS_FLAG);
 		//mPaints[6].setStrokeWidth(mRadius / 2);
 		mPaints[6].setStrokeCap(Paint.Cap.BUTT);
 		mPaints[6].setStyle(Paint.Style.FILL);
+		
+		mPaints[7] = new Paint();
+		mPaints[7].setColor(Color.WHITE);
+		mPaints[7].setStrokeWidth(5);
+		mPaints[7].setAntiAlias(true);
+		mPaints[7].setStrokeCap(Paint.Cap.BUTT);
+		mPaints[7].setStyle(Paint.Style.STROKE);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
-		
-		
-		rect.set(getWidth() / 2 - (mRadius/2), getHeight() / 2 - (mRadius/2),
-				getWidth() / 2 + (mRadius/2), getHeight() / 2 + (mRadius/2));
-
+		//rect.set(innerRect.left, innerRect.top,innerRect.right,innerRect.bottom);
+		rect.set(getWidth() / 1.5f - (mRadius/2), getHeight() / 1.5f - (mRadius/2),
+				getWidth() / 1.5f + (mRadius/2), getHeight() / 1.5f + (mRadius/2));
 		canvas.drawArc(rect, 0, 60, false, mPaints[5]);
 		canvas.drawArc(rect, 60, 60, false, mPaints[0]);
 		canvas.drawArc(rect, 120, 60, false, mPaints[1]);
 		canvas.drawArc(rect, 180, 60, false, mPaints[2]);
 		canvas.drawArc(rect, 240, 60, false, mPaints[3]);
 		canvas.drawArc(rect, 300, 60, false, mPaints[4]);
-
-		// canvas.drawLine(getWidth()/2,
-		// getHeight()/2, getWidth()/2-mRadius/2,
-		// getHeight()/2-mRadius/2,paint3);
-		//
-		// canvas.drawLine(getWidth()/2,
-		// getHeight()/2, getWidth()/2+mRadius/2,
-		// getHeight()/2-mRadius/2,paint3);
-		//
-		// canvas.drawLine(getWidth()/2,
-		// getHeight()/2, getWidth()/2-mRadius/2,
-		// getHeight()/2+mRadius/2,paint3);
-		//
-		// canvas.drawLine(getWidth()/2,
-		// getHeight()/2, getWidth()/2+mRadius/2,
-		// getHeight()/2+mRadius/2,paint3);
-		//
-		// canvas.drawLine(getWidth()/2,
-		// getHeight()/2, getWidth()/2-mRadius/4-mRadius/2,
-		// getHeight()/2,paint3);
-		//
-		// canvas.drawLine(getWidth()/2,
-		// getHeight()/2, getWidth()/2+mRadius/4+mRadius/2,
-		// getHeight()/2,paint3);
-
+		
 		innerRect.set(getWidth() / 2 - (mRadius/2), getHeight() / 2 - (mRadius/2),
 				getWidth() / 2 + (mRadius/2), getHeight() / 2 + (mRadius/2));
+		canvas.drawOval(innerRect, mPaints[6]);
 		
-		 canvas.drawOval(innerRect, mPaints[6]);
-		 //canvas.drawCircle(getWidth() / 2, getHeight() / 2,mRadius/2,mPaints[6]);
-				
-
-		// paint8.setColor(Color.YELLOW);
-		// paint8.setStrokeWidth(3);
-		// paint8.setAntiAlias(true);
-		// paint8.setStrokeCap(Paint.Cap.BUTT);
-		// paint8.setStyle(Paint.Style.STROKE);
-		//
-		// canvas.drawCircle(getWidth()/2, getHeight()/2, mRadius/2, paint8);
 	}
 	
 	public void initSize(int width,int height)
@@ -203,5 +204,34 @@ public class AdvDialView extends View {
 	@Override
 	protected void onSizeChanged(final int w, final int h, final int oldw,
 			final int oldh) {
+	}
+	
+	private void drawScale(final Canvas canvas) {
+		canvas.save(Canvas.MATRIX_SAVE_FLAG);
+		// On canvas, North is 0 degrees, East is 90 degrees, South is 180 etc.
+		// We start the scale somewhere South-West so we need to first rotate
+		// the canvas.
+		canvas.rotate(mScaleRotation, 0.5f, 0.5f);
+
+		final int totalTicks = mDivisions * mSubdivisions + 1;
+		for (int i = 0; i < totalTicks; i++) {
+			final float y1 = mLineScaleRect.top;
+			final float y2 = y1 - 0.010f; // height of division
+			final float y3 = y1 + 0.030f; // height of subdivision
+			final Paint paint = getDefaultScalePaint();
+			canvas.drawLine(0.5f, y2, 0.5f, y3, paint);
+			canvas.rotate(mSubdivisionAngle, 0.5f, 0.5f);
+		}
+		canvas.restore();
+	}
+	
+	private Paint getDefaultScalePaint() {
+		final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		int myColor = mContext.getResources().getColor(android.R.color.white);
+		paint.setColor(myColor);
+        paint.setStyle(Paint.Style.STROKE);
+        //paint.setStrokeWidth(0.001f);
+        paint.setStrokeWidth(0.014f);
+        return paint;
 	}
 }
